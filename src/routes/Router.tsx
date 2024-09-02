@@ -1,5 +1,5 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import { Home, Login } from "../pages";
+import { Home, Login, Overview } from "../pages";
 import DashBoardLayout from "@/layouts/DashBoardLayout";
 
 const Router = () => {
@@ -8,7 +8,9 @@ const Router = () => {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/dashboard" element={<DashBoardLayout />}></Route>
+        <Route path="/dashboard" element={<DashBoardLayout />}>
+          <Route path="overview" element={<Overview />} />
+        </Route>
       </Routes>
     </BrowserRouter>
   );

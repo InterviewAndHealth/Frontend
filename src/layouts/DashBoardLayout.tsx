@@ -9,10 +9,10 @@ const DashBoardLayout = () => {
     <>
       <div className="relative flex">
         <div
-          className="lg:hidden fixed top-4 left-4 z-50 cursor-pointer"
+          className="lg:hidden fixed w-full bg-transparent h-14 backdrop-blur-sm z-50 cursor-pointer flex justify-end"
           onClick={() => setOpen(!open)}
         >
-          <IoReorderThreeOutline size={40} />
+          <IoReorderThreeOutline size={40} className="my-auto w-12 h-12" />
         </div>
         <div
           className={`fixed ${
@@ -33,7 +33,7 @@ const DashBoardLayout = () => {
         </div>
         {open && (
           <div
-            className="h-screen w-screen transition-all ease-in-out delay-25 absolute left-0 top-0 bg-black bg-opacity-70 "
+            className="fixed inset-0 transition-all ease-in-out delay-25 delay-25  bg-black bg-opacity-70 "
             onClick={() => setOpen(!open)}
           ></div>
         )}
