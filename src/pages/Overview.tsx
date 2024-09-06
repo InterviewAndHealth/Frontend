@@ -1,12 +1,21 @@
+import { useState } from "react";
 import { GoDuplicate } from "react-icons/go";
 import { BiBarChartAlt2 } from "react-icons/bi";
-import { MdHistory } from "react-icons/md";
-import { FaRegHeart } from "react-icons/fa";
-import { MdOutlineCalendarToday } from "react-icons/md";
-import { PiBagSimpleBold } from "react-icons/pi";
-import { PiNotebookBold } from "react-icons/pi";
+import { MdHistory, MdOutlineCalendarToday } from "react-icons/md";
+import { FaRegHeart, FaArrowRight } from "react-icons/fa";
+import { PiBagSimpleBold, PiNotebookBold } from "react-icons/pi";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { IconType } from "react-icons";
+import { useNavigate } from "react-router-dom";
 
-// Define a mapping object for icons
 const PiIcons = {
   GoDuplicate: GoDuplicate,
   BiBarChartAlt2: BiBarChartAlt2,
@@ -16,8 +25,46 @@ const PiIcons = {
   PiBagSimpleBold: PiBagSimpleBold,
   PiNotebookBold: PiNotebookBold,
 };
+
 type IconKeys = keyof typeof PiIcons;
+
+type ButtonContent = {
+  label: string;
+  action: () => void;
+  icon?: IconType;
+  color?: string;
+};
+
+type PopupContent = {
+  title?: string;
+  description?: string[];
+  buttons?: ButtonContent[];
+};
+
 const Overview = () => {
+  const [isDialogOpen, setDialogOpen] = useState(false);
+  const [currentPopupContent, setCurrentPopupContent] =
+    useState<PopupContent | null>(null); // Use PopupContent type
+
+  const navigate = useNavigate();
+
+  const handleAction = (box: any) => {
+    switch (box.actionType) {
+      case "redirect":
+        // Handle navigation (replace with your router logic)
+        window.location.href = box.route;
+        break;
+      case "popup":
+        if (box.popupType === "confirmation") {
+          setCurrentPopupContent(box.popupContent);
+          setDialogOpen(true);
+        }
+        break;
+      default:
+        break;
+    }
+  };
+
   const overviewMap = [
     {
       title: "Mock Interviews",
@@ -26,6 +73,28 @@ const Overview = () => {
           icon: "GoDuplicate" as IconKeys,
           heading: "Setup a Mock Interview",
           subHeading: "Prepare with realistic, AI-driven mock interviews.",
+          actionType: "popup",
+          popupType: "confirmation",
+          popupContent: {
+            title: "Heads up!",
+            description: [
+              "Setting up a mock interview will cost you one credit.",
+              "You have 3 Credits left",
+            ],
+            buttons: [
+              {
+                label: "Get More Credits",
+                action: () => console.log("moved"),
+                icon: FaArrowRight,
+                color: "bg-main-100",
+              },
+              {
+                label: "Confirm Setup",
+                action: () => navigate("/dashboard/setup-interview"),
+                color: "bg-main-300",
+              },
+            ],
+          },
         },
         {
           icon: "BiBarChartAlt2" as IconKeys,
@@ -84,32 +153,26 @@ const Overview = () => {
   return (
     <>
       <div className="ml-4 pr-4 xl:pr-28 pb-8">
-        <h1 className="font-bold text-4xl text-main-300 pt-16 pb-4 lg:py-5 ">
+        <h1 className="font-bold text-4xl text-main-300  pt-16 pb-4 lg:py-5 ">
           Hello, John Doe
         </h1>
         {overviewMap.map((section, index) => (
           <div key={index} className="mb-3">
-            {/* Display the title */}
             <h2 className="text-2xl font-bold mb-1">{section.title}</h2>
-
-            {/* Display the boxes */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {section.boxes.map((box, i) => {
-                const IconComponent = PiIcons[box.icon]; // Dynamically pick the icon component
-
+                const IconComponent = PiIcons[box.icon];
                 return (
                   <div
                     key={i}
-                    className="flex flex-col items-start justify-center p-4 bg-white rounded-lg border-main-300 border-2 h-40 "
+                    className="flex flex-col items-start justify-center p-4 bg-white rounded-lg border-main-300 border-2 h-40 cursor-pointer"
+                    onClick={() => handleAction(box)} // Handle click event
                   >
-                    {/* Render the icon dynamically */}
                     <div className="mr-4 text-brandprimary text-2xl mb-3">
                       {IconComponent ? (
                         <IconComponent className="w-9 h-9" />
                       ) : null}
                     </div>
-
-                    {/* Render the heading and subheading */}
                     <div>
                       <h3 className="text-xl font-bold ">{box.heading}</h3>
                       <p className="text-xs font-bold text-main-100">
@@ -123,6 +186,55 @@ const Overview = () => {
           </div>
         ))}
       </div>
+
+      {/* Render Dynamic Dialog */}
+      {currentPopupContent && (
+        <Dialog open={isDialogOpen} onOpenChange={setDialogOpen}>
+          <DialogContent className="md:h-80 lg:w-[45%] w-[90%] rounded-xl border border-main-300">
+            {currentPopupContent.title && (
+              <DialogHeader>
+                <DialogTitle className="text-main-300 font-bold text-5xl text-center mt-4 mb-2">
+                  {currentPopupContent.title}
+                </DialogTitle>
+              </DialogHeader>
+            )}
+            {currentPopupContent.description && (
+              <DialogDescription className="text-main-100 text-md text-center ">
+                {Array.isArray(currentPopupContent.description) ? (
+                  currentPopupContent.description.map((desc, index) => (
+                    <span key={index} className="mb-3 block">
+                      {/* Render each description item */}
+                      {desc}
+                    </span>
+                  ))
+                ) : (
+                  <div>{currentPopupContent.description}</div> // Handle non-array case
+                )}
+              </DialogDescription>
+            )}
+            <DialogFooter className="sm:justify-center">
+              {currentPopupContent.buttons?.map(
+                (button: ButtonContent, index) => (
+                  <Button
+                    className={`${button.color} my-2 `}
+                    key={index}
+                    onClick={() => {
+                      button.action();
+                      setDialogOpen(false); // Close dialog after action
+                    }}
+                  >
+                    {button.label}
+                    {/* Render icon if available */}
+                    {button.icon && (
+                      <button.icon className="ml-2 inline-block" />
+                    )}
+                  </Button>
+                )
+              )}
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
     </>
   );
 };

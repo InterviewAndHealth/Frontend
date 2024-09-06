@@ -5,6 +5,7 @@ import { PiSquaresFourBold } from "react-icons/pi";
 import { MdOutlineMail } from "react-icons/md";
 import { AiOutlineQuestionCircle } from "react-icons/ai";
 import { Progress } from "@/components/ui/progress";
+import { MdLogout } from "react-icons/md";
 
 import { Button } from "@/components/ui/button";
 
@@ -28,16 +29,16 @@ const Sidebar = ({ toggleOpen }: sidebarProps) => {
           </div>
         </NavLink>
         <Button
-          className="bg-main-300 capitalize justify-start text-base h-12 md:text-md rounded-xl font-bold tracking-wide px-4 mt-8 mx-4 min-w-56"
+          className="bg-main-300 capitalize justify-start text-base  h-12 md:text-md rounded-xl font-bold tracking-wide px-4 mt-8 mx-4 min-w-56"
           onClick={() => {
             toggleOpen();
           }}
         >
-          <PiSquaresFourBold className="inline-block rounded-full text-brandprimary w-5 h-5 mr-2 rotate-45" />
+          <PiSquaresFourBold className="inline-block rounded-full  text-brandprimary w-5 h-5 mr-2 rotate-45" />
           Overview
         </Button>
         <Button
-          className="bg-white text-main-900 capitalize justify-start text-base h-12 md:text-md rounded-xl font-normal tracking-wide px-4 mt-3 mx-4 min-w-56"
+          className="bg-white text-main-900 capitalize justify-start hover:bg-slate-800 hover:text-white text-base h-12 md:text-md rounded-xl font-normal tracking-wide px-4 mt-3 mx-4 min-w-56"
           onClick={() => {
             toggleOpen();
           }}
@@ -45,9 +46,8 @@ const Sidebar = ({ toggleOpen }: sidebarProps) => {
           <MdOutlineMail className="inline-block rounded-full text-brandprimary w-5 h-5 mr-2" />
           Inbox
         </Button>
-
-        <div className="absolute w-full bottom-6 left-0 pl-4">
-          <div className="pr-4 mb-10">
+        <div className="px-4 mt-4">
+          <div className="mb-10">
             <h3 className="font-bold text-sm mb-2">John Doe’s credits left</h3>
             <h3 className="font-bold text-sm mb-1">3 credits</h3>
             <Progress value={80} />
@@ -61,16 +61,30 @@ const Sidebar = ({ toggleOpen }: sidebarProps) => {
               </Link>
             </h4>
           </div>
+        </div>
+
+        <div className="absolute w-full bottom-6 left-0 px-4">
           <NavLink to={"/dashboard/profile"}>
-            <button className={cn(normalLink, "w-full")}>
+            <button className={cn(normalLink, "w-full hover:bg-gray-950")}>
               <CgProfile className=" w-5 h-5" />
               Profile
             </button>
           </NavLink>
           <NavLink to={"/dashboard/settings"}>
-            <button className={cn(normalLink, "w-full")}>
+            <button className={cn(normalLink, "w-full hover:bg-gray-950")}>
               <AiOutlineQuestionCircle className="w-5 h-5" />
               Help
+            </button>
+          </NavLink>
+          <NavLink to={"/dashboard/settings"}>
+            <button
+              className={cn(
+                normalLink,
+                "w-full text-red-500 hover:bg-gray-950"
+              )}
+            >
+              <MdLogout className="w-5 h-5" />
+              Sign Out
             </button>
           </NavLink>
         </div>
