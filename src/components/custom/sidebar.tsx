@@ -6,7 +6,6 @@ import { MdOutlineMail } from "react-icons/md";
 import { AiOutlineQuestionCircle } from "react-icons/ai";
 import { Progress } from "@/components/ui/progress";
 import { MdLogout } from "react-icons/md";
-
 import { Button } from "@/components/ui/button";
 
 interface sidebarProps {
@@ -28,15 +27,16 @@ const Sidebar = ({ toggleOpen }: sidebarProps) => {
             <span>Mr.Safe</span>
           </div>
         </NavLink>
-        <Button
-          className="bg-main-300 capitalize justify-start text-base  h-12 md:text-md rounded-xl font-bold tracking-wide px-4 mt-8 mx-4 min-w-56"
+        <NavLink
+          to={"/dashboard/overview"}
+          className="bg-main-300 capitalize flex justify-start items-center text-white text-base  h-12 md:text-md rounded-xl font-bold tracking-wide px-4 mt-8 mx-4 min-w-56"
           onClick={() => {
             toggleOpen();
           }}
         >
           <PiSquaresFourBold className="inline-block rounded-full  text-brandprimary w-5 h-5 mr-2 rotate-45" />
           Overview
-        </Button>
+        </NavLink>
         <Button
           className="bg-white text-main-900 capitalize justify-start hover:bg-slate-800 hover:text-white text-base h-12 md:text-md rounded-xl font-normal tracking-wide px-4 mt-3 mx-4 min-w-56"
           onClick={() => {
@@ -64,7 +64,7 @@ const Sidebar = ({ toggleOpen }: sidebarProps) => {
         </div>
 
         <div className="absolute w-full bottom-6 left-0 px-4">
-          <NavLink to={"/dashboard/profile"}>
+          <NavLink to={"/dashboard/settings"}>
             <button className={cn(normalLink, "w-full hover:bg-gray-950")}>
               <CgProfile className=" w-5 h-5" />
               Profile

@@ -6,7 +6,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -19,11 +18,13 @@ import { Progress } from "@/components/ui/progress";
 import { LuMic } from "react-icons/lu";
 import { NavLink } from "react-router-dom";
 
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+
 const SetUpInterview = () => {
   return (
     <>
       <div className=" flex justify-center items-center h-screen">
-        <div className="lg:w-3/4 w-[90%]  h-5/6 bg-white border-2 rounded-xl border-main-300">
+        <div className="lg:w-3/4 w-[90%] h-5/6 md:h-[95%] bg-white border-2 rounded-xl border-main-300">
           <h2 className="text-main-300 px-2 font-bold text-4xl md:text-5xl text-center mt-4 mb-2">
             Setup A Mock Interview
           </h2>
@@ -35,6 +36,34 @@ const SetUpInterview = () => {
             Paste or choose from our database of job descriptions.
           </h5>
           <Textarea className="border-2 rounded-lg border-main-300 md:w-1/2 w-5/6 mx-auto my-2" />
+
+          <h5 className="text-main-100 font-bold text-sm mt-4 md:w-1/3 w-5/6 mx-auto">
+            Job Field
+          </h5>
+          <div className="flex justify-center mt-1">
+            <ToggleGroup
+              type="multiple"
+              className="md:w-1/3 w-5/6 justify-start flex flex-wrap"
+            >
+              {[
+                "MBA",
+                "Civil Services",
+                "Internships",
+                "Full-time",
+                "Freelance",
+                "Contract",
+              ].map((level) => (
+                <ToggleGroupItem
+                  key={level}
+                  value={level}
+                  aria-label={`Set difficulty to ${level}`}
+                  className="border-2 border-main-300 text-main-100 "
+                >
+                  {level}
+                </ToggleGroupItem>
+              ))}
+            </ToggleGroup>
+          </div>
 
           <h5 className="text-main-100 font-bold text-sm mt-4 md:w-1/3 w-5/6 mx-auto">
             Job Type
@@ -67,17 +96,18 @@ const SetUpInterview = () => {
             Choose interview difficulty
           </h5>
           <div className="flex justify-center mt-1">
-            <div className="  md:w-1/3 w-5/6">
-              <Button className="text-main-100 mr-2 bg-white border-2 border-main-300">
-                Easy
-              </Button>
-              <Button className="text-main-100 mr-2 bg-white border-2 border-main-300">
-                Medium
-              </Button>
-              <Button className="text-main-100 mr-2 bg-white border-2 border-main-300">
-                Hard
-              </Button>
-            </div>
+            <ToggleGroup type="single" className="md:w-1/3 w-5/6 justify-start">
+              {["Easy", "Medium", "Hard"].map((level) => (
+                <ToggleGroupItem
+                  key={level}
+                  value={level}
+                  aria-label={`Set difficulty to ${level}`}
+                  className={` border-2 border-main-300 text-main-100`}
+                >
+                  {level}
+                </ToggleGroupItem>
+              ))}
+            </ToggleGroup>
           </div>
           <div className="flex justify-center">
             <Dialog>

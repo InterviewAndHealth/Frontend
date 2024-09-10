@@ -51,7 +51,6 @@ const Overview = () => {
   const handleAction = (box: any) => {
     switch (box.actionType) {
       case "redirect":
-        // Handle navigation (replace with your router logic)
         window.location.href = box.route;
         break;
       case "popup":
