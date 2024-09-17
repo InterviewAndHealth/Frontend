@@ -11,6 +11,17 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Checkbox } from "../ui/checkbox";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Label } from "../ui/label";
+import { Input } from "../ui/input";
 const items = [
   {
     id: "necessaryData",
@@ -116,12 +127,59 @@ const SettingsData = () => {
           Download All Your Data
         </Button>
         <br />
-        <Button className="border-2 border-[#DE4545] font-bold hover:bg-[#DE4545] hover:text-white bg-white text-[#DE4545] h-14 mt-8 mr-2 w-[45%]">
-          Turn Off All Except necessary
-        </Button>
-        <Button className="border-2 border-[#DE4545] font-bold hover:bg-[#DE4545] hover:text-white bg-white text-[#DE4545] h-14 w-[45%]">
-          Delete All Your Data
-        </Button>
+        <div className="flex justify-start items-center mt-6">
+          <Button className="border-2 border-[#DE4545] font-bold text-wrap hover:bg-[#DE4545] hover:text-white bg-white text-[#DE4545] h-14 mr-2 w-[45%]">
+            Turn Off All Except necessary
+          </Button>
+          <Dialog>
+            <DialogTrigger className="border-2 border-[#DE4545] rounded-lg bg-white font-bold hover:bg-[#DE4545] hover:text-white text-[#DE4545]  h-14 w-[45%]">
+              Delete All Your Data
+            </DialogTrigger>
+            <DialogContent className="h-1/2 lg:w-2/5 w-[90%] rounded-xl border border-main-300">
+              <DialogHeader>
+                <DialogTitle className="text-[#DE4545]  font-bold text-4xl text-center mt-4 mb-2">
+                  Heads up!
+                </DialogTitle>
+                <DialogDescription className="text-[#DE4545] text-lg text-center mt-4 w-3/4 mx-auto">
+                  This will{" "}
+                  <span className="font-bold">Delete All Your Data</span>
+                </DialogDescription>
+
+                <div className=" flex flex-col b items-center py-5">
+                  <Label
+                    htmlFor="email"
+                    className="text-[#DE4545] w-1/2 font-bold mb-1 ml-4"
+                  >
+                    Type in Your Email to proceed
+                  </Label>
+                  <Input
+                    type="email"
+                    placeholder="ex:johndoe@gmail.com"
+                    className="w-1/2  border-[#DE4545] text-[#DE4545] placeholder:text-[#DE4545]"
+                  />
+                </div>
+                <div className="flex justify-center space-x-3 pt-4">
+                  <DialogClose asChild>
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      className="bg-main-100 text-white h-14 w-[30%] hover:text-white hover:bg-main-100"
+                    >
+                      Go Back
+                    </Button>
+                  </DialogClose>
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    className="border-2 border-[#DE4545] rounded-lg bg-white font-bold hover:bg-[#DE4545] hover:text-white text-[#DE4545] h-14 w-[30%]"
+                  >
+                    Confirm Delete
+                  </Button>
+                </div>
+              </DialogHeader>
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
     </>
   );
