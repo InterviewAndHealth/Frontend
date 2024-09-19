@@ -4,6 +4,9 @@ import DashBoardLayout from "@/layouts/DashBoardLayout";
 import SetUpInterview from "@/pages/SetUpInterview";
 import InterviewScreen from "@/pages/InterviewScreen";
 import Settings from "@/pages/Settings";
+import UserDetails from "@/pages/UserDetails";
+import UserPreferences from "@/pages/UserPreferences";
+import SetUpFinished from "@/pages/SetUpFinished";
 
 const Router = () => {
   return (
@@ -16,8 +19,10 @@ const Router = () => {
           <Route path="setup-interview" element={<SetUpInterview />} />
           <Route path="settings" element={<Settings />} />
         </Route>
-
-        <Route path="interview" element={<InterviewScreen />} />
+        <Route path="/user-details" element={<UserDetails />} />
+        <Route path="/user-preferences" element={<UserPreferences />} />
+        <Route path="/setup-finished" element={<SetUpFinished />} />
+        <Route path="/interview" element={<InterviewScreen />} />
       </Routes>
     </BrowserRouter>
   );
