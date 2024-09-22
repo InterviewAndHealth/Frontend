@@ -71,7 +71,7 @@ const UserDetails = () => {
     <>
       <div className=" w-full h-full">
         <div
-          className="  h-full bg-cover flex items-center justify-center  sm:bg-contain bg-[url('/src/assets/bg-line1.svg'),url('/src/assets/bg-line2.svg')] bg-center bg-no-repeat"
+          className="  h-full bg-cover flex items-center justify-center sm:bg-contain bg-[url('/src/assets/bg-line1.svg'),url('/src/assets/bg-line2.svg')] bg-center bg-no-repeat"
           style={{
             backgroundPosition: "left, right",
           }}
