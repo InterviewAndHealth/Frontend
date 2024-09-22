@@ -35,11 +35,11 @@ const HomeSectionOne = () => {
             </div>
           </div>
           <div className=" flex flex-col justify-center items-center mt-52 lg:mt-72 mb-28">
-            <div className="text-main-300 text-3xl text-center">
+            <div className="text-main-300 text-3xl text-center px-3">
               Make sure you’re at peak performance with our
             </div>
             <div
-              className="font-bold text-3xl"
+              className="font-bold text-3xl text-center px-3"
               style={{
                 background:
                   "linear-gradient(to right, #454ADE, black, #454ADE, black)",

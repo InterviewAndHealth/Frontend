@@ -38,7 +38,7 @@ const HomeSectionThree = () => {
           From <span className="font-bold"> Wealth</span> to
           <span className="font-bold"> Wellness</span>
         </div>
-        <div className="ml-32 mb-16 text-xl mt-4 lg:mt-0">
+        <div className="lg:ml-32 mb-16 text-xl mt-4 lg:mt-0 text-center lg:text-start">
           We’ve got you covered
         </div>
 
