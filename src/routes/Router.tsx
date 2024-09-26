@@ -1,5 +1,7 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import { Home, Login, Overview } from "../pages";
+import { Home,Overview } from "../pages";
+import  Register from "../pages/auth/Register";
+import Login from "../pages/auth/Login";
 import DashBoardLayout from "@/layouts/DashBoardLayout";
 import SetUpInterview from "@/pages/SetUpInterview";
 import InterviewScreen from "@/pages/InterviewScreen";
@@ -13,6 +15,8 @@ const Router = () => {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Home />} />
+        {/* <Route path="/login" element={<Login />} /> */}
+        <Route path="/register" element={<Register/>} />
         <Route path="/login" element={<Login />} />
         <Route path="/dashboard" element={<DashBoardLayout />}>
           <Route path="overview" element={<Overview />} />
