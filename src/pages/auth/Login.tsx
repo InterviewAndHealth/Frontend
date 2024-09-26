@@ -1,5 +1,3 @@
-
-
 import { NavLink } from "react-router-dom";
 import { Button } from "../../components/ui/button";
 import {
@@ -10,13 +8,16 @@ import {
   CardTitle,
 } from "../../components/ui/card";
 import { Input } from "../../components/ui/input";
+import GoogleLogin from "@/components/custom/googleLogin";
 
 const Login = () => {
   return (
     <div className="flex justify-center items-center min-h-screen bg-gradient-to-r from-[#dcdcf8] via-[#0f0f60] to-[#01010f]">
       <Card className="w-[450px] h-[500px] p-8 rounded-3xl shadow-xl">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-semibold text-blue-700">Sign In</CardTitle>
+          <CardTitle className="text-2xl font-semibold text-blue-700">
+            Sign In
+          </CardTitle>
         </CardHeader>
         <CardContent>
           {/* Social Sign In Buttons */}
@@ -29,14 +30,7 @@ const Login = () => {
               />
               Continue with LinkedIn
             </Button>
-            <Button className="flex items-center justify-center w-[60%] py-2 px-3 bg-white text-blue-600 border border-gray-300 rounded-md shadow hover:bg-gray-100 text-sm">
-            <img
-                src="src\assets\google.png"
-                alt="Google"
-                className="w-5 h-5 mr-2"
-              />
-              Continue with Google
-            </Button>
+            <GoogleLogin />
           </div>
 
           {/* OR Divider */}
@@ -50,16 +44,14 @@ const Login = () => {
               <Input
                 type="email"
                 placeholder="Email Id"
-               className="w-full p-2 text-sm border border-blue-300 rounded-md focus:border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none"
-              
+                className="w-full p-2 text-sm border border-blue-300 rounded-md focus:border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none"
               />
             </div>
             <div className="mb-4 w-[85%]">
               <Input
                 type="password"
                 placeholder="Password"
-               className="w-full p-2 text-sm border border-blue-300 rounded-md focus:ring-0 focus:border-blue-500 focus:outline-none"
-            
+                className="w-full p-2 text-sm border border-blue-300 rounded-md focus:ring-0 focus:border-blue-500 focus:outline-none"
               />
             </div>
             <Button
