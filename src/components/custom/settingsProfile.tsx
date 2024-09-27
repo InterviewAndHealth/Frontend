@@ -13,10 +13,20 @@ import {
 import { Input } from "@/components/ui/input";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { FiMinusCircle } from "react-icons/fi";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Label } from "../ui/label";
 
 const formSchema = z.object({
-  username: z.string().min(2, {
-    message: "Username must be at least 2 characters.",
+  email: z.string().email({
+    message: "Please enter a valid email address.",
   }),
   phoneNumber: z
     .string()
@@ -29,17 +39,24 @@ const formSchema = z.object({
   lastName: z.string().min(2, {
     message: "Username must be at least 2 characters.",
   }),
-  textStyles: z.array(z.string()).nonempty("Select at least one style"),
+
+  preferredCity: z.string().min(2, {
+    message: "City must be at least 2 characters.",
+  }),
+  skills: z.array(z.string()).nonempty("Select at least one skills"),
+  services: z.array(z.string()).nonempty("Select at least one service"),
+  workMode: z.array(z.string()).nonempty("Select at least one work mode"),
 });
 const SettingsProfile = () => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      username: "",
       phoneNumber: "",
+      email: "",
       firstName: "",
       lastName: "",
-      textStyles: [],
+      preferredCity: "",
+      skills: [],
     },
   });
   function onSubmit(values: z.infer<typeof formSchema>) {
@@ -55,7 +72,7 @@ const SettingsProfile = () => {
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
               control={form.control}
-              name="username"
+              name="email"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-main-300 font-bold ml-4">
@@ -154,7 +171,7 @@ const SettingsProfile = () => {
                 </h5>
                 <FormField
                   control={form.control}
-                  name="textStyles"
+                  name="skills"
                   render={({ field }) => (
                     <FormItem>
                       <FormControl>
@@ -178,14 +195,14 @@ const SettingsProfile = () => {
                               key={value}
                               value={value}
                               aria-label="Toggle bold"
-                              className="border-main-300 border-2 text-main-300 mr-1"
+                              className="border-main-300 border-2 rounded-lg text-main-300 mr-1"
                             >
                               {value}
                               <FiMinusCircle className="h-4 w-4 ml-2" />
                             </ToggleGroupItem>
                           ))}
 
-                          <Button className="border-main-300 border-2 bg-white text-main-300">
+                          <Button className="border-main-300 border-2 bg-white rounded-lg text-main-300 hover:bg-main-300 hover:text-white">
                             Add another
                           </Button>
                         </ToggleGroup>
@@ -202,7 +219,7 @@ const SettingsProfile = () => {
                   </h3>
                   <FormField
                     control={form.control}
-                    name="textStyles"
+                    name="services"
                     render={({ field }) => (
                       <FormItem>
                         <FormControl>
@@ -224,7 +241,7 @@ const SettingsProfile = () => {
                                 key={value}
                                 value={value}
                                 aria-label="Toggle bold"
-                                className="border-main-300 border-2 text-main-300 mr-1"
+                                className="border-main-300 border-2 rounded-lg text-main-300 mr-1"
                               >
                                 {value}
                               </ToggleGroupItem>
@@ -240,7 +257,7 @@ const SettingsProfile = () => {
                   </h3>
                   <FormField
                     control={form.control}
-                    name="textStyles"
+                    name="workMode"
                     render={({ field }) => (
                       <FormItem>
                         <FormControl>
@@ -255,7 +272,7 @@ const SettingsProfile = () => {
                                 key={value}
                                 value={value}
                                 aria-label="Toggle bold"
-                                className="border-main-300 border-2 text-main-300 mr-1"
+                                className="border-main-300 border-2 rounded-lg text-main-300 mr-1"
                               >
                                 {value}
                               </ToggleGroupItem>
@@ -271,7 +288,7 @@ const SettingsProfile = () => {
             </div>
             <FormField
               control={form.control}
-              name="firstName"
+              name="preferredCity"
               render={({ field }) => (
                 <FormItem className="w-[45%]">
                   <FormLabel className="text-main-300 font-bold ml-4">
@@ -288,9 +305,54 @@ const SettingsProfile = () => {
         </Form>
 
         <h3 className=" text-main-300 font-bold mt-5 mb-3">Support</h3>
-        <Button className="border-2 border-[#DE4545] bg-white font-bold hover:bg-[#DE4545] hover:text-white text-[#DE4545] h-14 w-[45%]">
-          Delete Your account
-        </Button>
+        <Dialog>
+          <DialogTrigger className="border-2 border-[#DE4545] rounded-lg bg-white font-bold hover:bg-[#DE4545] hover:text-white text-[#DE4545] h-14 w-[45%]">
+            Delete Your account
+          </DialogTrigger>
+          <DialogContent className="h-1/2 lg:w-2/5 w-[90%] rounded-xl border border-main-300">
+            <DialogHeader>
+              <DialogTitle className="text-[#DE4545]  font-bold text-4xl text-center mt-4 mb-2">
+                Delete Your Account
+              </DialogTitle>
+              <DialogDescription className="text-[#DE4545] text-md text-center mt-4 w-3/4 mx-auto">
+                Deleting your account will remove your active subscription and
+                refund your money.
+              </DialogDescription>
+
+              <div className=" flex flex-col b items-center py-5">
+                <Label
+                  htmlFor="email"
+                  className="text-[#DE4545] w-1/2 font-bold mb-1 ml-4"
+                >
+                  Type in Your Email to proceed
+                </Label>
+                <Input
+                  type="email"
+                  placeholder="ex:johndoe@gmail.com"
+                  className="w-1/2  border-[#DE4545] text-[#DE4545] placeholder:text-[#DE4545]"
+                />
+              </div>
+              <div className="flex justify-center space-x-3 pt-4">
+                <DialogClose asChild>
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    className="bg-main-100 text-white h-14 w-[30%] hover:text-white hover:bg-main-100"
+                  >
+                    Go Back
+                  </Button>
+                </DialogClose>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  className="border-2 border-[#DE4545] rounded-lg bg-white font-bold hover:bg-[#DE4545] hover:text-white text-[#DE4545] h-14 w-[30%]"
+                >
+                  Confirm Delete
+                </Button>
+              </div>
+            </DialogHeader>
+          </DialogContent>
+        </Dialog>
       </div>
     </>
   );
