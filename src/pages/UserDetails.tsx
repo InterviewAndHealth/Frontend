@@ -23,8 +23,12 @@ import {
 import { isValidPhoneNumber } from "react-phone-number-input";
 import { PhoneInput } from "@/components/ui/phone-input";
 import { Button } from "@/components/ui/button";
-import { FaLinkedinIn } from "react-icons/fa";
 import { IoDocumentOutline } from "react-icons/io5";
+import { useState } from "react";
+import { useCreateStudent } from "@/services/user/mutations";
+import Notify from "@/lib/notify";
+import { Loader2 } from "lucide-react";
+
 const formSchema = z.object({
   firstName: z.string().min(2, {
     message: "First name must be at least 2 characters.",
@@ -32,13 +36,10 @@ const formSchema = z.object({
   lastName: z.string().min(2, {
     message: "Last name must be at least 2 characters.",
   }),
-  phoneNo: z
+  contactNumber: z
     .string()
     .min(1, { message: "Phone number is required." })
     .refine(isValidPhoneNumber, { message: "Invalid phone number" }),
-  email: z.string().email({
-    message: "Invalid email address",
-  }),
   gender: z.enum(["Male", "Female", "Other"], {
     required_error: "Gender is required",
   }),
@@ -48,24 +49,44 @@ const formSchema = z.object({
   country: z.string().min(2, {
     message: "Please select a valid country.",
   }),
-  skills: z.array(z.string()).nonempty("Required"),
-  aboutCareer: z.array(z.string()).nonempty("Required"),
+  preferredCity: z.string().min(2, {
+    message: "City must be at least 2 characters.",
+  }),
+  skills: z.array(z.string()).min(2, "Select at least two skills"),
+  preparingFor: z.string().min(1, {
+    message: "Select at least one",
+  }),
+  workMode: z.string().min(1, {
+    message: "Select at least one",
+  }),
 });
 
 const UserDetails = () => {
+  const [file, setFile] = useState<File | null>(null);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       firstName: "",
       lastName: "",
-      phoneNo: "",
-      email: "",
+      contactNumber: "",
       city: "",
       country: "",
+      preferredCity: "",
+      preparingFor: "",
+      workMode: "",
     },
   });
-  function onSubmit(values: z.infer<typeof formSchema>) {
+
+  const createStudent = useCreateStudent();
+
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    if (!file) {
+      Notify("error", "Please upload your resume!!");
+      return;
+    }
     console.log(values);
+    console.log(file);
+    createStudent.mutate({ student: values, file });
   }
   return (
     <>
@@ -80,38 +101,39 @@ const UserDetails = () => {
             <h2 className="text-main-300 px-2 font-bold text-4xl md:text-5xl text-center my-4">
               Confirm Your details
             </h2>
-            <div className="flex  space-x-3 justify-center">
-              <ImageInput
+            <div className="flex  space-x-3 justify-center mb-6">
+              {/* <ImageInput
                 logo={<FaLinkedinIn className="text-2xl text-blue-500 mr-2" />}
                 id="linkedin"
                 text="Upload a linkedin pdf"
-              />
+              /> */}
               <ImageInput
                 logo={
                   <IoDocumentOutline className="text-2xl text-blue-500 mr-2" />
                 }
                 id="resume"
                 text="Upload Your resume"
+                setFile={setFile}
               />
             </div>
-            <Button
+            {/* <Button
               type="submit"
               className=" bg-main-300 h-14 rounded-xl w-52 text-wrap lg:py-0 lg:px-14 mt-4 text-white font-normal text-sm mx-auto block"
             >
               Fill details from your resume
-            </Button>
-            <span className="text-main-300 text-center my-5 block">
+            </Button> */}
+            {/* <span className="text-main-300 text-center my-5 block">
               Please check if your details have been correctly filled
-            </span>
-            <div className="flex items-center justify-center my-4 font-bold">
+            </span> */}
+            {/* <div className="flex items-center justify-center my-4 font-bold">
               <div className="flex-grow border-2 border-main-50"></div>
               <span className="mx-4 text-main-50">or</span>
               <div className="flex-grow border-2 border-main-50"></div>
-            </div>
+            </div> */}
 
-            <h4 className="text-main-300 font-bold text-xl lg:text-2xl text-center ">
+            {/* <h4 className="text-main-300 font-bold text-xl lg:text-2xl text-center ">
               Fill details Manually
-            </h4>
+            </h4> */}
             <Form {...form}>
               <form
                 onSubmit={form.handleSubmit(onSubmit)}
@@ -149,7 +171,7 @@ const UserDetails = () => {
                 />
                 <FormField
                   control={form.control}
-                  name="phoneNo"
+                  name="contactNumber"
                   render={({ field }) => {
                     return (
                       <FormItem className="md:col-span-1 w-full lg:w-[45%] mx-auto">
@@ -167,7 +189,7 @@ const UserDetails = () => {
                     );
                   }}
                 />
-                <FormField
+                {/* <FormField
                   control={form.control}
                   name="email"
                   render={({ field }) => (
@@ -185,7 +207,7 @@ const UserDetails = () => {
                       <FormMessage />
                     </FormItem>
                   )}
-                />
+                /> */}
                 <FormField
                   control={form.control}
                   name="gender"
@@ -253,9 +275,9 @@ const UserDetails = () => {
                     </FormItem>
                   )}
                 />
-                <FormField
+                {/* <FormField
                   control={form.control}
-                  name="skills"
+                  name="languages"
                   render={({ field }) => (
                     <FormItem className="w-full lg:w-[45%] mx-auto">
                       <FormLabel className="text-main-300 font-bold ml-4">
@@ -291,11 +313,12 @@ const UserDetails = () => {
                           </Button>
                         </ToggleGroup>
                       </FormControl>
+
                       <FormMessage />
                     </FormItem>
                   )}
-                />
-                <FormField
+                /> */}
+                {/* <FormField
                   control={form.control}
                   name="aboutCareer"
                   render={({ field }) => (
@@ -331,12 +354,149 @@ const UserDetails = () => {
                       <FormMessage />
                     </FormItem>
                   )}
+                /> */}
+                <FormField
+                  control={form.control}
+                  name="skills"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-main-300 font-bold ml-4">
+                        Skills you’d like to use
+                      </FormLabel>
+                      <div className="text-main-300 text-xs ml-4 mb-3">
+                        Click the plus if you want related jobs
+                      </div>
+                      <FormControl>
+                        <ToggleGroup
+                          type="multiple"
+                          value={field.value}
+                          onValueChange={field.onChange}
+                          className="flex flex-wrap justify-start"
+                        >
+                          {[
+                            "MERN",
+                            "Java",
+                            "Python",
+                            "Typescript",
+                            "UI/UX Design",
+                            "Management",
+                            "Sales",
+                            "Human Resources",
+                          ].map((value) => (
+                            <ToggleGroupItem
+                              key={value}
+                              value={value}
+                              aria-label="Toggle bold"
+                              className="border-main-300 border-2  rounded-lg text-main-300 mr-1"
+                            >
+                              {value}
+                              <IoMdAddCircleOutline className="h-4 w-4 ml-2" />
+                            </ToggleGroupItem>
+                          ))}
+
+                          <Button className="border-main-300 border-2 bg-white text-main-300 rounded-lg hover:bg-main-300 hover:text-white">
+                            Add another
+                          </Button>
+                        </ToggleGroup>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <h3 className=" text-main-300 font-bold mt-5 mb-2 ml-3">
+                  What are you preparing for?
+                </h3>
+                <FormField
+                  control={form.control}
+                  name="preparingFor"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <ToggleGroup
+                          type="single"
+                          value={field.value}
+                          onValueChange={field.onChange}
+                          className="flex flex-wrap justify-start"
+                        >
+                          {[
+                            "MBA",
+                            "Civil Services",
+                            "Internships",
+                            "Full-time",
+                            "Freelance",
+                            "Contract",
+                          ].map((value) => (
+                            <ToggleGroupItem
+                              key={value}
+                              value={value}
+                              aria-label="Toggle bold"
+                              className="border-main-300 border-2 rounded-lg text-main-300 mr-1"
+                            >
+                              {value}
+                            </ToggleGroupItem>
+                          ))}
+                        </ToggleGroup>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <h3 className=" text-main-300 font-bold mt-5 mb-2 ml-3">
+                  Work Mode
+                </h3>
+                <FormField
+                  control={form.control}
+                  name="workMode"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <ToggleGroup
+                          type="single"
+                          value={field.value}
+                          onValueChange={field.onChange}
+                          className="flex flex-wrap justify-start"
+                        >
+                          {["Remote", "In-Office", "Hybrid"].map((value) => (
+                            <ToggleGroupItem
+                              key={value}
+                              value={value}
+                              aria-label="Toggle bold"
+                              className="border-main-300 border-2  rounded-lg text-main-300 mr-1"
+                            >
+                              {value}
+                            </ToggleGroupItem>
+                          ))}
+                        </ToggleGroup>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="preferredCity"
+                  render={({ field }) => (
+                    <FormItem className="w-full lg:w-[45%] mx-auto">
+                      <FormLabel className="text-main-300 font-bold ml-4">
+                        Preferred City
+                      </FormLabel>
+                      <FormControl>
+                        <Input placeholder="Enter your city" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
                 <Button
                   type="submit"
                   className=" bg-main-300 h-14 rounded-xl w-full lg:w-[45%] text-white font-normal text-base mx-auto block"
+                  disabled={createStudent.isPending}
                 >
-                  Continue
+                  {createStudent.isPending && (
+                    <Loader2 className="w-4 h-4 animate-spin mr-3" />
+                  )}
+                  Submit
                 </Button>
               </form>
             </Form>

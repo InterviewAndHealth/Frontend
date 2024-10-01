@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { Dispatch, SetStateAction, useState } from "react";
 import { FaFilePdf, FaFileWord } from "react-icons/fa";
 import { MdOutlineUploadFile } from "react-icons/md";
 
@@ -6,13 +6,15 @@ const DocumentInput: React.FC<{
   text: string;
   id: string;
   logo: JSX.Element;
-}> = ({ text, logo, id }) => {
+  setFile: Dispatch<SetStateAction<File | null>>;
+}> = ({ text, logo, id, setFile }) => {
   const [fileName, setFileName] = useState<string | null>(null);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files ? event.target.files[0] : null;
     if (file) {
       setFileName(file.name);
+      setFile(file);
     }
   };
 

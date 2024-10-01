@@ -19,6 +19,10 @@ const normalLink =
 //   "flex  text-brandprimary text-sm font-semibold items-center justify-start gap-2 bg-white px-3 py-3  border-r-4 border-brandprimary";
 
 const Sidebar = ({ toggleOpen }: sidebarProps) => {
+  function logout(){
+    localStorage.removeItem('auth-token');
+    window.location.href = '/';
+  }
   return (
     <>
       <div className="relative bg-white lg:w-64 flex flex-col border-r-2 border-brightred border-opacity-15 h-screen pt-4 lg:mt-3">
@@ -82,6 +86,7 @@ const Sidebar = ({ toggleOpen }: sidebarProps) => {
                 normalLink,
                 "w-full text-red-500 hover:bg-gray-950"
               )}
+              onClick={logout}
             >
               <MdLogout className="w-5 h-5" />
               Sign Out
