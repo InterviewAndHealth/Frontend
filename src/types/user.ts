@@ -3,6 +3,10 @@ export type registerData = {
   password: string;
 };
 
+export type googleLoginData = {
+  code: string;
+};
+
 export type studentProfileData = {
   firstName: string;
   lastName: string;

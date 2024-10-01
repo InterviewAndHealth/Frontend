@@ -1,4 +1,5 @@
 import {
+  googleLoginData,
   registerData,
   studentProfileData,
   updateStudentProfileData,
@@ -12,6 +13,10 @@ export const register = (data: registerData) => {
 export const login = (data: registerData) => {
   return axios.post("/login", data);
 };
+
+export const googleLogin = (data:googleLoginData) =>{
+  return axios.post("/google",data);
+}
 
 export const getStudentProfile = () => {
   return axios.get("/StudentProfile");
