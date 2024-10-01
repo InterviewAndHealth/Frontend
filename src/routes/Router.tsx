@@ -9,7 +9,7 @@ import Settings from "@/pages/Settings";
 import UserDetails from "@/pages/UserDetails";
 import UserPreferences from "@/pages/UserPreferences";
 import SetUpFinished from "@/pages/SetUpFinished";
-import PrivateRoutes from "./privateRoutes";
+import PrivateRoutes from "./PrivateRoutes";
 
 const Router = () => {
   return (
