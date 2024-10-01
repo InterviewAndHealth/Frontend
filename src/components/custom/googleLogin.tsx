@@ -1,16 +1,17 @@
-
 import { useGoogleLogin, CodeResponse } from "@react-oauth/google";
 import { Button } from "../ui/button";
-
+import { useGoogleSignup } from "@/services/user/mutations";
 
 const GoogleLogin = () => {
-  
-  
+  const login = useGoogleSignup();
 
   const responseMessage = (
     response: Omit<CodeResponse, "error" | "error_description" | "error_uri">
   ) => {
     console.log(response["code"]);
+    const code = response["code"];
+    localStorage.setItem("google_auth_code", response["code"]);
+    login.mutate({ code });
   };
   const errorMessage = (
     error: Pick<CodeResponse, "error" | "error_description" | "error_uri">

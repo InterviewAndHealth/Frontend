@@ -1,10 +1,12 @@
 import {
+  googleLoginData,
   registerData,
   studentProfileData,
   updateStudentProfileData,
 } from "@/types/user";
 import {
   createStudentProfile,
+  googleLogin,
   login,
   register,
   updateStudentProfile,
@@ -43,6 +45,32 @@ export function useRegister() {
 export function useLogin() {
   return useMutation({
     mutationFn: (data: registerData) => login(data),
+    onMutate: () => {
+      console.log("onMutate");
+    },
+    onError: (error) => {
+      if (axios.isAxiosError(error)) {
+        console.error("onError", error?.response);
+        Notify("error", error?.response?.data?.message);
+      }
+    },
+    onSuccess: (response) => {
+      console.log("onSuccess");
+      if (response) {
+        localStorage.setItem("auth-token", response?.data?.authToken);
+        Notify("success", response?.data?.message);
+        window.location.href = "/dashboard/overview";
+      }
+    },
+    onSettled: () => {
+      console.log("on setteled");
+    },
+  });
+}
+
+export function useGoogleSignup() {
+  return useMutation({
+    mutationFn: (data: googleLoginData) => googleLogin(data),
     onMutate: () => {
       console.log("onMutate");
     },
