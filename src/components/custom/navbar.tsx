@@ -1,10 +1,13 @@
 import { useState, useEffect } from "react";
 import { HiOutlineBars3 } from "react-icons/hi2";
 import { IoClose } from "react-icons/io5";
+import { useNavigate } from "react-router-dom";
+import { Button } from "../ui/button";
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
   const [scrolling, setScrolling] = useState(false);
+  const navigate = useNavigate();
 
   const handleOpen = () => {
     setOpen(!open);
@@ -42,7 +45,13 @@ const Navbar = () => {
           <span>Pricing</span>
         </div>
         <div className="space-x-12">
-          <span className="font-bold">Sign Up</span>
+          <Button
+            variant="ghost"
+            className="font-bold"
+            onClick={() => navigate("/register")}
+          >
+            Sign Up
+          </Button>
           <span className="bg-main-300 text-white rounded-xl p-3">
             Go to MIP
           </span>

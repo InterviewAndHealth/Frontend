@@ -1,6 +1,6 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import { Home,Overview } from "../pages";
-import  Register from "../pages/auth/Register";
+import { Home, Overview } from "../pages";
+import Register from "../pages/auth/Register";
 import Login from "../pages/auth/Login";
 import DashBoardLayout from "@/layouts/DashBoardLayout";
 import SetUpInterview from "@/pages/SetUpInterview";
@@ -9,6 +9,7 @@ import Settings from "@/pages/Settings";
 import UserDetails from "@/pages/UserDetails";
 import UserPreferences from "@/pages/UserPreferences";
 import SetUpFinished from "@/pages/SetUpFinished";
+import PrivateRoutes from "./privateRoutes";
 
 const Router = () => {
   return (
@@ -16,9 +17,9 @@ const Router = () => {
       <Routes>
         <Route path="/" element={<Home />} />
         {/* <Route path="/login" element={<Login />} /> */}
-        <Route path="/register" element={<Register/>} />
+        <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/dashboard" element={<DashBoardLayout />}>
+        <Route path="/dashboard" element={<PrivateRoutes><DashBoardLayout /></PrivateRoutes>}>
           <Route path="overview" element={<Overview />} />
           <Route path="setup-interview" element={<SetUpInterview />} />
           <Route path="settings" element={<Settings />} />
