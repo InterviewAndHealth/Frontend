@@ -34,7 +34,6 @@ const Navbar = () => {
 
   useEffect(() => {
     const token = localStorage.getItem("auth-token");
-
     if (token) setToken(token);
   }, []);
 
