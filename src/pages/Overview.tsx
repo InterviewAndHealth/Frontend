@@ -15,6 +15,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { IconType } from "react-icons";
 import { useNavigate } from "react-router-dom";
+import { useStudentProfile } from "@/services/user/queries";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const PiIcons = {
   GoDuplicate: GoDuplicate,
@@ -149,11 +151,19 @@ const Overview = () => {
     },
   ];
 
+  const { data, isPending } = useStudentProfile();
+
   return (
     <>
       <div className="ml-4 pr-4 xl:pr-28 pb-8">
         <h1 className="font-bold text-4xl text-main-300  pt-16 pb-4 lg:py-5 ">
-          Hello, John Doe
+          {isPending ? (
+            <>
+              <Skeleton className="h-12 w-24 rounded-xl" />
+            </>
+          ) : (
+            <>{`Hello, ${data?.data?.student?.firstname} ${data?.data?.student?.lastname}`}</>
+          )}
         </h1>
         {overviewMap.map((section, index) => (
           <div key={index} className="mb-3">

@@ -2,6 +2,8 @@ import SettingsData from "@/components/custom/settingsData";
 import SettingsNotifications from "@/components/custom/settingsNotifications";
 import SettingsProfile from "@/components/custom/settingsProfile";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useStudentProfile } from "@/services/user/queries";
 import { useState } from "react";
 
 const Settings = () => {
@@ -19,15 +21,25 @@ const Settings = () => {
     }
   };
 
+  const { data, isPending } = useStudentProfile();
+
   return (
     <>
       <div className=" flex justify-center items-center min-h-screen  py-6 ">
         <div className="lg:w-[95%] h-full bg-white border-2 flex flex-col md:flex-row rounded-xl border-main-300 pb-4 mt-8 lg:mt-0 mx-3 lg:mx-0">
           <div className="mx-3 relative">
             <h1 className="font-bold text-4xl text-main-300  pt-4">
-              Hello, John Doe
+              {isPending ? (
+                <>
+                  <Skeleton className="h-12 w-24 rounded-xl" />
+                </>
+              ) : (
+                <>{`Hello, ${data?.data?.student?.firstname} ${data?.data?.student?.lastname}`}</>
+              )}
             </h1>
-            <span className=" text-base text-main-300 ">dohnjoe@gmail.com</span>
+            <span className=" text-base text-main-300 ">
+              {/* {data?.data?.student?.mail} */}
+            </span>
 
             <div className="flex md:flex-col flex-wrap md:flex-nowrap space-y-1 my-6 ">
               {/* Tab 1 */}

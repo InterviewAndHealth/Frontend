@@ -7,6 +7,8 @@ import { AiOutlineQuestionCircle } from "react-icons/ai";
 import { Progress } from "@/components/ui/progress";
 import { MdLogout } from "react-icons/md";
 import { Button } from "@/components/ui/button";
+import { useStudentProfile } from "@/services/user/queries";
+import { Skeleton } from "../ui/skeleton";
 
 interface sidebarProps {
   toggleOpen: () => void;
@@ -23,6 +25,8 @@ const Sidebar = ({ toggleOpen }: sidebarProps) => {
     localStorage.removeItem('auth-token');
     window.location.href = '/';
   }
+
+  const { data, isPending } = useStudentProfile();
   return (
     <>
       <div className="relative bg-white lg:w-64 flex flex-col border-r-2 border-brightred border-opacity-15 h-screen pt-4 lg:mt-3">
@@ -52,7 +56,15 @@ const Sidebar = ({ toggleOpen }: sidebarProps) => {
         </Button>
         <div className="px-4 mt-4">
           <div className="mb-10">
-            <h3 className="font-bold text-sm mb-2">John Doe’s credits left</h3>
+            <h3 className="font-bold text-sm mb-2">
+              {isPending ? (
+                <>
+                  <Skeleton className="h-4 w-6 rounded-xl" />
+                </>
+              ) : (
+                <>{`${data?.data?.student?.firstname} ${data?.data?.student?.lastname}'s credits left`}</>
+              )}
+            </h3>
             <h3 className="font-bold text-sm mb-1">3 credits</h3>
             <Progress value={80} />
             <h4 className="text-sm mb-2 mt-1">

@@ -5,5 +5,6 @@ export function useStudentProfile() {
   return useQuery({
     queryKey: ["profile"],
     queryFn: () => getStudentProfile(),
+    staleTime: 30000,
   });
 }
