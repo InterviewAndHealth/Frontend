@@ -3,11 +3,14 @@ import { HiOutlineBars3 } from "react-icons/hi2";
 import { IoClose } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../ui/button";
+import { jwtDecode } from "jwt-decode";
+import Notify from "@/lib/notify";
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
   const [scrolling, setScrolling] = useState(false);
   const navigate = useNavigate();
+  const [token, setToken] = useState<string | null>(null);
 
   const handleOpen = () => {
     setOpen(!open);
@@ -29,6 +32,37 @@ const Navbar = () => {
     };
   }, []);
 
+  useEffect(() => {
+    const token = localStorage.getItem("auth-token");
+
+    if (token) setToken(token);
+  }, []);
+
+  const redirect = () => {
+    if (token) {
+      const decodedToken = jwtDecode(token);
+      const currentTime = Date.now() / 1000;
+      if (decodedToken && decodedToken.exp) {
+        if (decodedToken.exp < currentTime) {
+          Notify("info", "Session expired!!");
+          localStorage.removeItem("auth-token");
+          window.location.href = "/";
+          return;
+        } else {
+          window.location.href = "/dashboard/overview";
+        }
+      } else {
+        Notify("info", "Session expired!!");
+        localStorage.removeItem("auth-token");
+        window.location.href = "/";
+      }
+    } else {
+      Notify("info", "Session expired!!");
+      localStorage.removeItem("auth-token");
+      window.location.href = "/";
+    }
+  };
+
   return (
     <>
       {/* Navbar for larger screens */}
@@ -45,13 +79,20 @@ const Navbar = () => {
           <span>Pricing</span>
         </div>
         <div className="space-x-12">
-          <Button
-            variant="ghost"
-            className="font-bold"
-            onClick={() => navigate("/register")}
-          >
-            Sign Up
-          </Button>
+          {!token && (
+            <Button
+              variant="ghost"
+              className="font-bold"
+              onClick={() => navigate("/register")}
+            >
+              Sign Up
+            </Button>
+          )}
+          {token && (
+            <Button variant="ghost" className="font-bold" onClick={redirect}>
+              Dashboard
+            </Button>
+          )}
           <span className="bg-main-300 text-white rounded-xl p-3">
             Go to MIP
           </span>
