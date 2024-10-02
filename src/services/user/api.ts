@@ -14,9 +14,9 @@ export const login = (data: registerData) => {
   return axios.post("/login", data);
 };
 
-export const googleLogin = (data:googleLoginData) =>{
-  return axios.post("/google",data);
-}
+export const googleLogin = (data: googleLoginData) => {
+  return axios.get(`/google?code=${data.code}`);
+};
 
 export const getStudentProfile = () => {
   return axios.get("/StudentProfile");
