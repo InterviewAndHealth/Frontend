@@ -130,8 +130,23 @@ const Navbar = () => {
           <div>Logo</div>
           <div>For Companies</div>
           <div>Pricing</div>
-          <div>Sign Up</div>
-          <div>Go to MIP</div>
+          {!token && (
+            <Button
+              variant="default"
+              className="font-bold"
+              onClick={() => navigate("/register")}
+            >
+              Sign Up
+            </Button>
+          )}
+          {token && (
+            <Button variant="default" className="font-bold" onClick={redirect}>
+              Dashboard
+            </Button>
+          )}
+          <span className="bg-main-300 text-white rounded-xl p-3">
+            Go to MIP
+          </span>
         </div>
       </div>
     </>
