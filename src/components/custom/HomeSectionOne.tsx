@@ -1,5 +1,5 @@
 import { Button } from "../ui/button";
-
+import interviewImage from "@/assets/interviewImage.png";
 const HomeSectionOne = () => {
   return (
     <>
@@ -28,7 +28,7 @@ const HomeSectionOne = () => {
             </div>
             <div className=" w-full mt-12 lg:w-1/2 flex justify-center">
               <img
-                src="/src/assets/interviewImage.png"
+                src={interviewImage}
                 className="w-4/5 lg:w-2/3 border-main-50 p-4 border-2 rounded-xl "
                 alt="image..."
               />
@@ -51,7 +51,7 @@ const HomeSectionOne = () => {
             </div>
             <div className=" w-full lg:w-1/2 flex justify-center mt-10">
               <img
-                src="/src/assets/interviewImage.png"
+                src={interviewImage}
                 className="w-4/5 lg:w-2/3 border-main-50 p-4 border-2 rounded-xl "
                 alt=""
               />

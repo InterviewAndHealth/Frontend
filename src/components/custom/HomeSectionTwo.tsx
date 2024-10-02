@@ -1,4 +1,6 @@
 import { useState } from "react";
+import interviewImage from "@/assets/interviewImage.png";
+import tripleCircles from "@/assets/tripleCircles.png";
 
 const HomeSectionTwo = () => {
   const [activeTab, setActiveTab] = useState("Path");
@@ -8,7 +10,7 @@ const HomeSectionTwo = () => {
         return (
           <div className=" w-4/5 flex justify-center ">
             <img
-              src="/src/assets/interviewImage.png"
+              src={interviewImage}
               className=" border-main-50 p-4 border-2 rounded-xl "
               alt=""
             />
@@ -18,14 +20,14 @@ const HomeSectionTwo = () => {
       case "Opportunities":
         return (
           <div className=" w-2/3 flex justify-center items-center">
-            <img src="/src/assets/tripleCircles.png" alt="" />
+            <img src={tripleCircles} alt="" />
           </div>
         );
 
       case "Balance":
         return (
           <div className=" w-2/3 flex justify-center items-center">
-            <img src="/src/assets/tripleCircles.png" alt="" />
+            <img src={tripleCircles} alt="" />
           </div>
         );
     }
