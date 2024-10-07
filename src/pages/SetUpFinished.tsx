@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { FaArrowRightLong } from "react-icons/fa6";
 
 const SetUpFinished = () => {
+  
   return (
     <>
       <div className=" w-full h-full">
