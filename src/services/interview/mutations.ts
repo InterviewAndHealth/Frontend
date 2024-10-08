@@ -24,7 +24,7 @@ export function useCreateInterview() {
           response.data?.interview?.interviewid
         );
         Notify("success", response?.data?.message);
-        // window.location.href = "/dashboard/overview";
+        window.location.href = `/interview/${response.data?.interview?.interviewid}`;
       }
     },
     onSettled: () => {
