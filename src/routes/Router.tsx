@@ -19,7 +19,14 @@ const Router = () => {
         {/* <Route path="/login" element={<Login />} /> */}
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/dashboard" element={<PrivateRoutes><DashBoardLayout /></PrivateRoutes>}>
+        <Route
+          path="/dashboard"
+          element={
+            <PrivateRoutes>
+              <DashBoardLayout />
+            </PrivateRoutes>
+          }
+        >
           <Route path="overview" element={<Overview />} />
           <Route path="setup-interview" element={<SetUpInterview />} />
           <Route path="settings" element={<Settings />} />
@@ -27,7 +34,7 @@ const Router = () => {
         <Route path="/user-details" element={<UserDetails />} />
         <Route path="/user-preferences" element={<UserPreferences />} />
         <Route path="/setup-finished" element={<SetUpFinished />} />
-        <Route path="/interview" element={<InterviewScreen />} />
+        <Route path="/interview/:interviewId?" element={<InterviewScreen />} />
       </Routes>
     </BrowserRouter>
   );
