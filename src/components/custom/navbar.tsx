@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { HiOutlineBars3 } from "react-icons/hi2";
 import { IoClose } from "react-icons/io5";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "../ui/button";
 import { jwtDecode } from "jwt-decode";
 import Notify from "@/lib/notify";
@@ -15,6 +15,11 @@ const Navbar = () => {
   const handleOpen = () => {
     setOpen(!open);
   };
+
+  function logout() {
+    localStorage.removeItem("auth-token");
+    window.location.href = "/";
+  }
 
   useEffect(() => {
     const handleScroll = () => {
@@ -92,9 +97,22 @@ const Navbar = () => {
               Dashboard
             </Button>
           )}
-          <span className="bg-main-300 text-white rounded-xl p-3">
-            Go to MIP
-          </span>
+          {token && (
+            <span
+              className="bg-main-300 text-white rounded-xl p-3 hover:cursor-pointer "
+              onClick={logout}
+            >
+              Logout
+            </span>
+          )}
+          {!token && (
+            <Link
+              className="bg-main-300 text-white rounded-xl p-3"
+              to={"/login"}
+            >
+              Login
+            </Link>
+          )}
         </div>
       </div>
 

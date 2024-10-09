@@ -50,6 +50,8 @@ const InterviewScreen = () => {
     sourceNode.connect(processorNode);
     processorNode.connect(audioContext.destination);
   };
+  let silenceTimeout: any = null; // Global variable to track the silence timer
+  let activeMessage: boolean = false; // Variable to track if a message is currently being updated
 
   const startRecording = async () => {
     const command = new StartStreamTranscriptionCommand({
@@ -58,7 +60,9 @@ const InterviewScreen = () => {
       MediaSampleRateHertz: SAMPLE_RATE,
       AudioStream: getAudioStream(),
     });
+
     const data = await transcribeClient!.send(command);
+
     for await (const event of data.TranscriptResultStream) {
       const results = event.TranscriptEvent.Transcript.Results;
       if (results.length && !results[0]?.IsPartial) {
@@ -69,13 +73,16 @@ const InterviewScreen = () => {
   };
 
   const handleData = (content: string) => {
+
     lastUserMessageRef.current += ` ${content}`;
     resetSilenceTimer();
   };
 
   const resetSilenceTimer = () => {
     clearTimeout(silenceTimeout);
+
     silenceTimeout = setTimeout(() => {
+      // After 10 seconds of silence, treat it as a new message
       if (lastUserMessageRef.current) {
         continueConversation(lastUserMessageRef.current);
         lastUserMessageRef.current = "";
@@ -84,7 +91,7 @@ const InterviewScreen = () => {
   };
 
   const stopSilenceTimer = () => {
-    clearTimeout(silenceTimeout);
+    clearTimeout(silenceTimeout); // Stop the timer manually if needed
   };
 
   const getAudioStream = async function* () {
