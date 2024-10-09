@@ -13,15 +13,13 @@ import {
 } from "@aws-sdk/client-transcribe-streaming";
 import { PollyClient, SynthesizeSpeechCommand } from "@aws-sdk/client-polly";
 import { Buffer } from "buffer";
+import { interview_backend } from "@/axiosInstance";
 
 interface Message {
   type: string;
   content: string;
 }
 
-const api = "https://mock-interview.gopalsaraf.tech/v1";
-
-// const mediaRecorder = undefined;
 const language = "en-US";
 const SAMPLE_RATE = 44100;
 let transcribeClient = undefined;
@@ -30,15 +28,13 @@ let audioContext = undefined;
 let sourceNode: MediaStreamAudioSourceNode | undefined = undefined;
 let processorNode: AudioNode | undefined = undefined;
 let silenceTimeout: NodeJS.Timeout | undefined = undefined;
-const SILIENCE_TIMEOUT = 10000;
+const SILENCE_TIMEOUT = 10000;
 
 const InterviewScreen = () => {
   const { interviewId } = useParams();
 
   const [messages, setMessages] = useState<Message[]>([]);
   const [isRecording, setIsRecording] = useState(false);
-  // const [isNewMessage, setIsNewMessage] = useState(true);
-  // const [currentContent, setCurrentContent] = useState("");
   const lastUserMessageRef = useRef<string>("");
 
   const createMicrophoneStream = async () => {
@@ -56,7 +52,6 @@ const InterviewScreen = () => {
   };
 
   const startRecording = async () => {
-    console.log("Starting recording");
     const command = new StartStreamTranscriptionCommand({
       LanguageCode: language,
       MediaEncoding: "pcm",
@@ -74,11 +69,8 @@ const InterviewScreen = () => {
   };
 
   const handleData = (content: string) => {
-    console.log(content);
-
     const lastMessageAI =
       messages.length === 0 || messages[messages.length - 1].type === "ai";
-    console.log("Last message AI: ", lastMessageAI);
 
     if (lastMessageAI) {
       setMessages((prev) => [
@@ -104,15 +96,13 @@ const InterviewScreen = () => {
   };
 
   const resetSilenceTimer = () => {
-    console.log("Resetting silence timer");
-
     clearTimeout(silenceTimeout);
     silenceTimeout = setTimeout(() => {
       if (lastUserMessageRef.current) {
         continueConversation(lastUserMessageRef.current);
         lastUserMessageRef.current = "";
       }
-    }, SILIENCE_TIMEOUT);
+    }, SILENCE_TIMEOUT);
   };
 
   const stopSilenceTimer = () => {
@@ -184,24 +174,14 @@ const InterviewScreen = () => {
   };
 
   const continueConversation = async (userResponse: string) => {
-    console.log("Continuing conversation : " + userResponse);
-
-    const response = await fetch(
-      `${api}/conversations/continue/${interviewId}`,
+    const response = await interview_backend.post(
+      `/conversations/continue/${interviewId}`,
       {
-        method: "POST",
-        headers: {
-          accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          message: userResponse,
-        }),
+        message: userResponse,
       }
     );
 
     const data = await response.json();
-    console.log(data);
 
     setMessages((prev) => [
       ...prev,
@@ -211,21 +191,16 @@ const InterviewScreen = () => {
       },
     ]);
 
-    playAudio(data.message).then(() => {
-      console.log("Audio played");
-    });
+    playAudio(data.message);
   };
 
   const stopRecording = async () => {
-    console.log("Stopping recording");
     processorNode.onaudioprocess = null;
     processorNode.disconnect();
     sourceNode.disconnect();
   };
 
   const toggleRecording = async () => {
-    console.log("Toggling recording");
-
     if (isRecording) {
       setIsRecording(false);
       await stopRecording();
@@ -236,63 +211,47 @@ const InterviewScreen = () => {
   };
 
   useEffect(() => {
-    fetch(`${api}/aws/credentials?interview_id=${interviewId}`).then(
-      (response) => {
-        response.json().then((data) => {
-          console.log(data);
-
-          transcribeClient = new TranscribeStreamingClient({
+    interview_backend
+      .get(`/aws/credentials?interview_id=${interviewId}`)
+      .then((response) => {
+        response.json().then((response) => {
+          const client_params = {
             region: data.region,
             credentials: {
               accessKeyId: data.accessKeyId,
               secretAccessKey: data.secretAccessKey,
               sessionToken: data.sessionToken,
             },
-          });
+          };
 
-          pollyClient = new PollyClient({
-            region: data.region,
-            credentials: {
-              accessKeyId: data.accessKeyId,
-              secretAccessKey: data.secretAccessKey,
-              sessionToken: data.sessionToken,
-            },
-          });
+          transcribeClient = new TranscribeStreamingClient(client_params);
+          pollyClient = new PollyClient(client_params);
 
           createMicrophoneStream().then(() => {
             setIsRecording(true);
-            startRecording().then(() => {
-              console.log("Recording started");
-            });
+            startRecording();
           });
         });
-      }
-    );
+      });
 
-    fetch(`${api}/conversations/start/${interviewId}`, {
-      method: "POST",
-      headers: {
-        accept: "application/json",
-        "Content-Type": "application/json",
-      },
-    }).then((response) => {
-      if (!response.ok) {
-        return;
-      }
-      response.json().then((data) => {
-        console.log(data);
-        setMessages((prev) => [
-          ...prev,
-          {
-            type: "ai",
-            content: data.message,
-          },
-        ]);
-        playAudio(data.message).then(() => {
-          console.log("Audio played");
+    interview_backend
+      .post(`/conversations/start/${interviewId}`)
+      .then((response) => {
+        if (!response.ok) {
+          return;
+        }
+        response.json().then((data) => {
+          console.log(data);
+          setMessages((prev) => [
+            ...prev,
+            {
+              type: "ai",
+              content: data.message,
+            },
+          ]);
+          playAudio(data.message);
         });
       });
-    });
   }, []);
 
   return (

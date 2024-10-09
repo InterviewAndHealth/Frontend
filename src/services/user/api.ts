@@ -4,22 +4,22 @@ import {
   studentProfileData,
   updateStudentProfileData,
 } from "@/types/user";
-import { instanceOne } from "@/axiosInstance";
+import { user_backend } from "@/axiosInstance";
 
 export const register = (data: registerData) => {
-  return instanceOne.post("/register", data);
+  return user_backend.post("/register", data);
 };
 
 export const login = (data: registerData) => {
-  return instanceOne.post("/login", data);
+  return user_backend.post("/login", data);
 };
 
 export const googleLogin = (data: googleLoginData) => {
-  return instanceOne.get(`/google?code=${data.code}`);
+  return user_backend.get(`/google?code=${data.code}`);
 };
 
 export const getStudentProfile = () => {
-  return instanceOne.get("/StudentProfile");
+  return user_backend.get("/StudentProfile");
 };
 
 export const createStudentProfile = (data: studentProfileData, file: File) => {
@@ -35,7 +35,7 @@ export const createStudentProfile = (data: studentProfileData, file: File) => {
   formData.append("workMode", data.workMode);
   formData.append("preferredCity", data.preferredCity);
   data.skills?.map((skill) => formData.append("skills", skill));
-  return instanceOne.post("/studentprofilewithresume", formData, {
+  return user_backend.post("/studentprofilewithresume", formData, {
     headers: {
       "Content-Type": "multipart/form-data",
     },
@@ -43,13 +43,13 @@ export const createStudentProfile = (data: studentProfileData, file: File) => {
 };
 
 export const updateStudentProfile = (data: updateStudentProfileData) => {
-  return instanceOne.put("/StudentProfile", data);
+  return user_backend.put("/StudentProfile", data);
 };
 
 export const uploadResume = (file: File) => {
   const formData = new FormData();
   formData.append("file", file);
-  return instanceOne.post("/uploadResume", formData, {
+  return user_backend.post("/uploadResume", formData, {
     headers: {
       "Content-Type": "multipart/form-data",
     },
