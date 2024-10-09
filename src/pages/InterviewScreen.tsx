@@ -28,7 +28,7 @@ let audioContext = undefined;
 let sourceNode: MediaStreamAudioSourceNode | undefined = undefined;
 let processorNode: AudioNode | undefined = undefined;
 let silenceTimeout: NodeJS.Timeout | undefined = undefined;
-const SILENCE_TIMEOUT = 10000;
+const SILENCE_TIMEOUT = 5000;
 
 const InterviewScreen = () => {
   const { interviewId } = useParams();
@@ -69,29 +69,7 @@ const InterviewScreen = () => {
   };
 
   const handleData = (content: string) => {
-    const lastMessageAI =
-      messages.length === 0 || messages[messages.length - 1].type === "ai";
-
-    if (lastMessageAI) {
-      setMessages((prev) => [
-        ...prev,
-        {
-          type: "human",
-          content: "",
-        },
-      ]);
-    }
-
-    setMessages((prev) => {
-      const newMessages = [...prev];
-      const lastMessageContent = newMessages[newMessages.length - 1].content;
-      newMessages[newMessages.length - 1].content =
-        lastMessageContent + content;
-
-      return newMessages;
-    });
-
-    lastUserMessageRef.current += content;
+    lastUserMessageRef.current += ` ${content}`;
     resetSilenceTimer();
   };
 
@@ -174,6 +152,14 @@ const InterviewScreen = () => {
   };
 
   const continueConversation = async (userResponse: string) => {
+    setMessages((prev) => [
+      ...prev,
+      {
+        type: "human",
+        content: userResponse,
+      },
+    ]);
+
     const response = await interview_backend.post(
       `/conversations/continue/${interviewId}`,
       {
@@ -181,7 +167,7 @@ const InterviewScreen = () => {
       }
     );
 
-    const data = await response.json();
+    const data = await response.data;
 
     setMessages((prev) => [
       ...prev,
@@ -214,43 +200,41 @@ const InterviewScreen = () => {
     interview_backend
       .get(`/aws/credentials?interview_id=${interviewId}`)
       .then((response) => {
-        response.json().then((response) => {
-          const client_params = {
-            region: data.region,
-            credentials: {
-              accessKeyId: data.accessKeyId,
-              secretAccessKey: data.secretAccessKey,
-              sessionToken: data.sessionToken,
-            },
-          };
+        const data = response.data;
+        const client_params = {
+          region: data.region,
+          credentials: {
+            accessKeyId: data.accessKeyId,
+            secretAccessKey: data.secretAccessKey,
+            sessionToken: data.sessionToken,
+          },
+        };
 
-          transcribeClient = new TranscribeStreamingClient(client_params);
-          pollyClient = new PollyClient(client_params);
+        transcribeClient = new TranscribeStreamingClient(client_params);
+        pollyClient = new PollyClient(client_params);
 
-          createMicrophoneStream().then(() => {
-            setIsRecording(true);
-            startRecording();
-          });
+        createMicrophoneStream().then(() => {
+          setIsRecording(true);
+          startRecording();
         });
       });
 
     interview_backend
       .post(`/conversations/start/${interviewId}`)
       .then((response) => {
-        if (!response.ok) {
+        if (response.status != 200) {
           return;
         }
-        response.json().then((data) => {
-          console.log(data);
-          setMessages((prev) => [
-            ...prev,
-            {
-              type: "ai",
-              content: data.message,
-            },
-          ]);
-          playAudio(data.message);
-        });
+        const data = response.data;
+        console.log(data);
+        setMessages((prev) => [
+          ...prev,
+          {
+            type: "ai",
+            content: data.message,
+          },
+        ]);
+        playAudio(data.message);
       });
   }, []);
 
