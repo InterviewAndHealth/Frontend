@@ -28,7 +28,7 @@ let audioContext = undefined;
 let sourceNode: MediaStreamAudioSourceNode | undefined = undefined;
 let processorNode: AudioNode | undefined = undefined;
 let silenceTimeout: NodeJS.Timeout | undefined = undefined;
-const SILENCE_TIMEOUT = 5000;
+const SILENCE_TIMEOUT = 12000;
 
 const InterviewScreen = () => {
   const { interviewId } = useParams();
@@ -73,7 +73,6 @@ const InterviewScreen = () => {
   };
 
   const handleData = (content: string) => {
-
     lastUserMessageRef.current += ` ${content}`;
     resetSilenceTimer();
   };
