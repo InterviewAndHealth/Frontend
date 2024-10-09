@@ -13,15 +13,13 @@ import {
 } from "@aws-sdk/client-transcribe-streaming";
 import { PollyClient, SynthesizeSpeechCommand } from "@aws-sdk/client-polly";
 import { Buffer } from "buffer";
+import { interview_backend } from "@/axiosInstance";
 
 interface Message {
   type: string;
   content: string;
 }
 
-const api = "https://mock-interview.gopalsaraf.tech/v1";
-
-// const mediaRecorder = undefined;
 const language = "en-US";
 const SAMPLE_RATE = 44100;
 let transcribeClient = undefined;
@@ -30,15 +28,13 @@ let audioContext = undefined;
 let sourceNode: MediaStreamAudioSourceNode | undefined = undefined;
 let processorNode: AudioNode | undefined = undefined;
 let silenceTimeout: NodeJS.Timeout | undefined = undefined;
-const SILIENCE_TIMEOUT = 10000;
+const SILENCE_TIMEOUT = 5000;
 
 const InterviewScreen = () => {
   const { interviewId } = useParams();
 
   const [messages, setMessages] = useState<Message[]>([]);
   const [isRecording, setIsRecording] = useState(false);
-  // const [isNewMessage, setIsNewMessage] = useState(true);
-  // const [currentContent, setCurrentContent] = useState("");
   const lastUserMessageRef = useRef<string>("");
 
   const createMicrophoneStream = async () => {
@@ -58,7 +54,6 @@ const InterviewScreen = () => {
   let activeMessage: boolean = false; // Variable to track if a message is currently being updated
 
   const startRecording = async () => {
-    console.log("Starting recording");
     const command = new StartStreamTranscriptionCommand({
       LanguageCode: language,
       MediaEncoding: "pcm",
@@ -78,37 +73,13 @@ const InterviewScreen = () => {
   };
 
   const handleData = (content: string) => {
-    console.log("Handling data: ", content);
 
-    if (!activeMessage) {
-      // If there is no active message being updated, create a new one
-      setMessages((prev) => [
-        ...prev,
-        {
-          type: "human",
-          content: "",
-        },
-      ]);
-      activeMessage = true; // Now there is an active message
-    }
-
-    // Update the content of the last message
-    setMessages((prev) => {
-      const newMessages = [...prev];
-      const lastMessage = newMessages[newMessages.length - 1];
-      lastMessage.content += content; // Append the content to the last message
-      return newMessages;
-    });
-
-    lastUserMessageRef.current += content;
-
-    resetSilenceTimer(); // Reset the timer to wait for inactivity
+    lastUserMessageRef.current += ` ${content}`;
+    resetSilenceTimer();
   };
 
   const resetSilenceTimer = () => {
-    console.log("Resetting silence timer");
-
-    clearTimeout(silenceTimeout); // Clear the previous timeout
+    clearTimeout(silenceTimeout);
 
     silenceTimeout = setTimeout(() => {
       // After 10 seconds of silence, treat it as a new message
@@ -116,9 +87,7 @@ const InterviewScreen = () => {
         continueConversation(lastUserMessageRef.current);
         lastUserMessageRef.current = "";
       }
-
-      activeMessage = false; // No longer an active message after timeout
-    }, 10000); // 10 seconds of silence
+    }, SILENCE_TIMEOUT);
   };
 
   const stopSilenceTimer = () => {
@@ -190,24 +159,22 @@ const InterviewScreen = () => {
   };
 
   const continueConversation = async (userResponse: string) => {
-    console.log("Continuing conversation : " + userResponse);
-
-    const response = await fetch(
-      `${api}/conversations/continue/${interviewId}`,
+    setMessages((prev) => [
+      ...prev,
       {
-        method: "POST",
-        headers: {
-          accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          message: userResponse,
-        }),
+        type: "human",
+        content: userResponse,
+      },
+    ]);
+
+    const response = await interview_backend.post(
+      `/conversations/continue/${interviewId}`,
+      {
+        message: userResponse,
       }
     );
 
-    const data = await response.json();
-    console.log(data);
+    const data = await response.data;
 
     setMessages((prev) => [
       ...prev,
@@ -217,21 +184,16 @@ const InterviewScreen = () => {
       },
     ]);
 
-    playAudio(data.message).then(() => {
-      console.log("Audio played");
-    });
+    playAudio(data.message);
   };
 
   const stopRecording = async () => {
-    console.log("Stopping recording");
     processorNode.onaudioprocess = null;
     processorNode.disconnect();
     sourceNode.disconnect();
   };
 
   const toggleRecording = async () => {
-    console.log("Toggling recording");
-
     if (isRecording) {
       setIsRecording(false);
       await stopRecording();
@@ -242,50 +204,35 @@ const InterviewScreen = () => {
   };
 
   useEffect(() => {
-    fetch(`${api}/aws/credentials?interview_id=${interviewId}`).then(
-      (response) => {
-        response.json().then((data) => {
-          console.log(data);
+    interview_backend
+      .get(`/aws/credentials?interview_id=${interviewId}`)
+      .then((response) => {
+        const data = response.data;
+        const client_params = {
+          region: data.region,
+          credentials: {
+            accessKeyId: data.accessKeyId,
+            secretAccessKey: data.secretAccessKey,
+            sessionToken: data.sessionToken,
+          },
+        };
 
-          transcribeClient = new TranscribeStreamingClient({
-            region: data.region,
-            credentials: {
-              accessKeyId: data.accessKeyId,
-              secretAccessKey: data.secretAccessKey,
-              sessionToken: data.sessionToken,
-            },
-          });
+        transcribeClient = new TranscribeStreamingClient(client_params);
+        pollyClient = new PollyClient(client_params);
 
-          pollyClient = new PollyClient({
-            region: data.region,
-            credentials: {
-              accessKeyId: data.accessKeyId,
-              secretAccessKey: data.secretAccessKey,
-              sessionToken: data.sessionToken,
-            },
-          });
-
-          createMicrophoneStream().then(() => {
-            setIsRecording(true);
-            startRecording().then(() => {
-              console.log("Recording started");
-            });
-          });
+        createMicrophoneStream().then(() => {
+          setIsRecording(true);
+          startRecording();
         });
-      }
-    );
+      });
 
-    fetch(`${api}/conversations/start/${interviewId}`, {
-      method: "POST",
-      headers: {
-        accept: "application/json",
-        "Content-Type": "application/json",
-      },
-    }).then((response) => {
-      if (!response.ok) {
-        return;
-      }
-      response.json().then((data) => {
+    interview_backend
+      .post(`/conversations/start/${interviewId}`)
+      .then((response) => {
+        if (response.status != 200) {
+          return;
+        }
+        const data = response.data;
         console.log(data);
         setMessages((prev) => [
           ...prev,
@@ -294,11 +241,8 @@ const InterviewScreen = () => {
             content: data.message,
           },
         ]);
-        playAudio(data.message).then(() => {
-          console.log("Audio played");
-        });
+        playAudio(data.message);
       });
-    });
   }, []);
 
   return (

@@ -33,7 +33,7 @@ const createApiInstance = (baseURL: string) => {
           // Remove the token
           localStorage.removeItem("auth-token");
 
-          // Navigate to the home page 
+          // Navigate to the home page
           window.location.href = "/";
         }
       }
@@ -45,7 +45,12 @@ const createApiInstance = (baseURL: string) => {
 };
 
 // Create instances for each backend
-export const instanceOne = createApiInstance(import.meta.env.VITE_BACKEND_URL);
-export const instanceTwo = createApiInstance(
-  import.meta.env.VITE_INTERVIEW_BACKEND_URL
+export const user_backend = createApiInstance(
+  import.meta.env.VITE_USERS_BACKEND_URL
+);
+export const interview_schedule_backend = createApiInstance(
+  import.meta.env.VITE_INTERVIEW_SCHEDULE_BACKEND_URL
+);
+export const interview_backend = createApiInstance(
+  import.meta.env.VITE_INTERVIEW_URL
 );
