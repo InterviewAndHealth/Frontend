@@ -54,6 +54,8 @@ const InterviewScreen = () => {
     sourceNode.connect(processorNode);
     processorNode.connect(audioContext.destination);
   };
+  let silenceTimeout: any = null; // Global variable to track the silence timer
+  let activeMessage: boolean = false; // Variable to track if a message is currently being updated
 
   const startRecording = async () => {
     console.log("Starting recording");
@@ -63,7 +65,9 @@ const InterviewScreen = () => {
       MediaSampleRateHertz: SAMPLE_RATE,
       AudioStream: getAudioStream(),
     });
+
     const data = await transcribeClient!.send(command);
+
     for await (const event of data.TranscriptResultStream) {
       const results = event.TranscriptEvent.Transcript.Results;
       if (results.length && !results[0]?.IsPartial) {
@@ -74,13 +78,10 @@ const InterviewScreen = () => {
   };
 
   const handleData = (content: string) => {
-    console.log(content);
+    console.log("Handling data: ", content);
 
-    const lastMessageAI =
-      messages.length === 0 || messages[messages.length - 1].type === "ai";
-    console.log("Last message AI: ", lastMessageAI);
-
-    if (lastMessageAI) {
+    if (!activeMessage) {
+      // If there is no active message being updated, create a new one
       setMessages((prev) => [
         ...prev,
         {
@@ -88,35 +89,40 @@ const InterviewScreen = () => {
           content: "",
         },
       ]);
+      activeMessage = true; // Now there is an active message
     }
 
+    // Update the content of the last message
     setMessages((prev) => {
       const newMessages = [...prev];
-      const lastMessageContent = newMessages[newMessages.length - 1].content;
-      newMessages[newMessages.length - 1].content =
-        lastMessageContent + content;
-
+      const lastMessage = newMessages[newMessages.length - 1];
+      lastMessage.content += content; // Append the content to the last message
       return newMessages;
     });
 
     lastUserMessageRef.current += content;
-    resetSilenceTimer();
+
+    resetSilenceTimer(); // Reset the timer to wait for inactivity
   };
 
   const resetSilenceTimer = () => {
     console.log("Resetting silence timer");
 
-    clearTimeout(silenceTimeout);
+    clearTimeout(silenceTimeout); // Clear the previous timeout
+
     silenceTimeout = setTimeout(() => {
+      // After 10 seconds of silence, treat it as a new message
       if (lastUserMessageRef.current) {
         continueConversation(lastUserMessageRef.current);
         lastUserMessageRef.current = "";
       }
-    }, SILIENCE_TIMEOUT);
+
+      activeMessage = false; // No longer an active message after timeout
+    }, 10000); // 10 seconds of silence
   };
 
   const stopSilenceTimer = () => {
-    clearTimeout(silenceTimeout);
+    clearTimeout(silenceTimeout); // Stop the timer manually if needed
   };
 
   const getAudioStream = async function* () {
