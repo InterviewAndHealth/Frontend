@@ -17,6 +17,7 @@ import { IconType } from "react-icons";
 import { useNavigate } from "react-router-dom";
 import { useStudentProfile } from "@/services/user/queries";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Badge } from "@/components/ui/badge";
 
 const PiIcons = {
   GoDuplicate: GoDuplicate,
@@ -166,7 +167,7 @@ const Overview = () => {
           )}
         </h1>
         {overviewMap.map((section, index) => (
-          <div key={index} className="mb-3">
+          <div key={index} className="mb-3 ">
             <h2 className="text-2xl font-bold mb-1">{section.title}</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {section.boxes.map((box, i) => {
@@ -174,9 +175,18 @@ const Overview = () => {
                 return (
                   <div
                     key={i}
-                    className="flex flex-col items-start justify-center p-4 bg-white rounded-lg border-main-300 border-2 h-40 cursor-pointer"
+                    className=" relative flex flex-col items-start justify-center p-4 bg-white rounded-lg border-main-300 border-2 h-40 cursor-pointer"
                     onClick={() => handleAction(box)} // Handle click event
                   >
+                    {!(index === 0 && i === 0) && (
+                      <Badge
+                        variant="outline"
+                        className="bg-red-500 text-white absolute -top-2 -right-6"
+                      >
+                        Soon
+                      </Badge>
+                    )}
+
                     <div className="mr-4 text-brandprimary text-2xl mb-3">
                       {IconComponent ? (
                         <IconComponent className="w-9 h-9" />
